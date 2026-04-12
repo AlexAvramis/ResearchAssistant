@@ -34,11 +34,11 @@ Upload PDFs (papers, notes, docs) and interact with an AI that answers questions
 |----------------|----------------------------------|
 | Frontend       | React 18                         |
 | Backend API    | FastAPI + Uvicorn                |
-| LLM            | OpenAI (gpt-4o-mini) via LangChain |
-| Embeddings     | OpenAI text-embedding-3-small   |
+| LLM            | OpenAI (gpt-4o-mini) via LangChain|
+| Embeddings     | OpenAI text-embedding-3-small    |
 | Vector DB      | ChromaDB (persistent, local)     |
 | PDF Processing | PyPDF + LangChain text splitters |
-| Memory         | JSON file-based conversation store |
+| Memory         | JSON file-based conversation store|
 
 ## Quick Start
 
