@@ -34,15 +34,19 @@ Upload PDFs (papers, notes, docs) and interact with an AI that answers questions
 |----------------|----------------------------------|
 | Frontend       | React 18                         |
 | Backend API    | FastAPI + Uvicorn                |
-| LLM            | OpenAI (gpt-4o-mini) via LangChain|
+| LLM            | OpenAI (gpt-4o-mini) via LangChain |
 | Embeddings     | OpenAI text-embedding-3-small    |
 | Vector DB      | ChromaDB (persistent, local)     |
 | PDF Processing | PyPDF + LangChain text splitters |
-| Memory         | JSON file-based conversation store|
+| Memory         | JSON file-based conversation store |
 
 ## Quick Start
 
-### 1. Backend
+> **You need two separate terminals** — one for the backend and one for the frontend.
+> Both processes run continuously, so they cannot share a terminal.
+> Start the backend first, then the frontend.
+
+### 1. Backend (Terminal 1)
 
 ```bash
 cd ResearchAssistant/backend
@@ -62,20 +66,25 @@ copy .env.example .env       # Windows
 
 # Run the server
 python run.py
+# Keep this terminal open — wait for "Uvicorn running on http://0.0.0.0:8000"
 ```
 
 The API will be available at `http://localhost:8000`. Docs at `http://localhost:8000/docs`.
 
-### 2. Frontend
+### 2. Frontend (Terminal 2)
 
 ```bash
 cd ResearchAssistant/frontend
 
+# Install dependencies (first time only)
 npm install
+
+# Start the dev server
 npm start
+# Keep this terminal open — opens browser automatically
 ```
 
-Opens at `http://localhost:3000`.
+Opens at `http://localhost:3000`. The backend must be running before you use the frontend.
 
 ## API Endpoints
 

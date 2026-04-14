@@ -14,7 +14,9 @@ export default function App() {
   const [showDocs, setShowDocs] = useState(false);
 
   const refreshConversations = () =>
-    getConversations().then((r) => setConversations(r.data));
+    getConversations()
+      .then((r) => setConversations(r.data))
+      .catch(() => {});
 
   useEffect(() => {
     refreshConversations();

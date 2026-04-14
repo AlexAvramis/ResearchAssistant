@@ -13,7 +13,10 @@ export default function DocumentPanel() {
   const [summarizing, setSummarizing] = useState(false);
   const fileRef = useRef();
 
-  const refresh = () => getDocuments().then((r) => setDocs(r.data));
+  const refresh = () =>
+    getDocuments()
+      .then((r) => setDocs(r.data))
+      .catch(() => {});
 
   useEffect(() => {
     refresh();

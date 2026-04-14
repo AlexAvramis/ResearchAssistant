@@ -23,7 +23,10 @@ class Settings(BaseSettings):
     # Memory
     MAX_MEMORY_MESSAGES: int = 20
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {
+        "env_file": str(Path(__file__).resolve().parent.parent / ".env"),
+        "extra": "ignore",
+    }
 
 
 settings = Settings()
