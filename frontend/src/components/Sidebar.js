@@ -34,7 +34,14 @@ export default function Sidebar({
             onClick={() => onSelect(c.conversation_id)}
             title={c.title}
           >
-            {c.title || "Untitled"}
+            <span className="conv-title">{c.title || "Untitled"}</span>
+            <button
+              className="conv-delete"
+              onClick={(e) => handleDelete(e, c.conversation_id)}
+              title="Delete conversation"
+            >
+              ×
+            </button>
           </div>
         ))}
       </div>

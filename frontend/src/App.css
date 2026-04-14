@@ -79,10 +79,37 @@ body {
   cursor: pointer;
   font-size: 13px;
   color: #cbd5e1;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.conv-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  flex: 1;
+}
+
+.conv-delete {
+  display: none;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.conv-item:hover .conv-delete {
+  display: inline;
+}
+
+.conv-delete:hover {
+  color: #ef4444;
 }
 
 .conv-item:hover {

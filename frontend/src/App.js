@@ -5,7 +5,7 @@ import DocumentPanel from "./components/DocumentPanel";
 import { getConversations } from "./api";
 
 function generateId() {
-  return Math.random().toString(36).substring(2, 10);
+  return crypto.randomUUID();
 }
 
 export default function App() {

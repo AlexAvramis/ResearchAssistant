@@ -1,6 +1,6 @@
-# AI Research Assistant (RAG System with Memory)
+# AI Research Assistant
 
-Upload PDFs (papers, notes, docs) and interact with an AI that answers questions grounded in your documents, summarizes sections, and remembers previous conversations.
+RAG-based research assistant that lets you upload PDFs and ask questions about them. It retrieves relevant chunks from your documents, passes them as context to an LLM, and gives grounded answers with source citations. Conversations are persisted so you can pick up where you left off.
 
 ## Architecture
 
@@ -20,73 +20,57 @@ Upload PDFs (papers, notes, docs) and interact with an AI that answers questions
                                 └──────────────────────────────────┘
 ```
 
-## Features
+## What it does
 
-- **PDF Upload & Indexing** — Upload PDF files; they are chunked and embedded into ChromaDB.
-- **RAG Q&A** — Ask questions and get answers grounded in your uploaded documents with source citations.
-- **Document Summarization** — Summarize entire documents or specific sections.
-- **Conversation Memory** — The assistant remembers previous messages within a conversation.
-- **Multi-conversation** — Create and switch between multiple chat sessions.
+- Upload PDFs → chunks them and indexes embeddings into ChromaDB
+- Ask questions → retrieves relevant chunks, feeds them to the LLM, returns answer + source citations
+- Summarize documents or specific sections
+- Conversation history is stored per session (JSON-backed)
+- Multiple conversations, switchable from the sidebar
 
-## Tech Stack
+## Stack
 
 | Layer          | Technology                       |
 |----------------|----------------------------------|
 | Frontend       | React 18                         |
-| Backend API    | FastAPI + Uvicorn                |
-| LLM            | OpenAI (gpt-4o-mini) via LangChain |
-| Embeddings     | OpenAI text-embedding-3-small    |
+| Backend        | FastAPI + Uvicorn                |
+| LLM            | OpenAI (`gpt-4o-mini`) via LangChain |
+| Embeddings     | `text-embedding-3-small`         |
 | Vector DB      | ChromaDB (persistent, local)     |
-| PDF Processing | PyPDF + LangChain text splitters |
-| Memory         | JSON file-based conversation store |
+| PDF parsing    | PyPDF + LangChain text splitters |
+| Memory         | JSON file store                  |
 
-## Quick Start
+## Setup
 
-> **You need two separate terminals** — one for the backend and one for the frontend.
-> Both processes run continuously, so they cannot share a terminal.
-> Start the backend first, then the frontend.
+**Requirements:** Python 3.10+, Node.js 18+, OpenAI API key with billing
 
-### 1. Backend (Terminal 1)
+Two terminals are needed — backend and frontend run as separate processes.
+
+### Backend (Terminal 1)
 
 ```bash
-cd ResearchAssistant/backend
-
-# Create and activate a virtual environment
+cd backend
 python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # macOS/Linux
 
-# Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
-copy .env.example .env       # Windows
-# cp .env.example .env       # macOS/Linux
-# Edit .env and add your OPENAI_API_KEY
-
-# Run the server
-python run.py
-# Keep this terminal open — wait for "Uvicorn running on http://0.0.0.0:8000"
+copy .env.example .env       # then edit .env and add your OPENAI_API_KEY
+python run.py                # runs on :8000
 ```
 
-The API will be available at `http://localhost:8000`. Docs at `http://localhost:8000/docs`.
-
-### 2. Frontend (Terminal 2)
+### Frontend (Terminal 2)
 
 ```bash
-cd ResearchAssistant/frontend
-
-# Install dependencies (first time only)
-npm install
-
-# Start the dev server
-npm start
-# Keep this terminal open — opens browser automatically
+cd frontend
+npm install      # first time only
+npm start        # runs on :3000
 ```
 
-Opens at `http://localhost:3000`. The backend must be running before you use the frontend.
+Start the backend first. Swagger docs are at `http://localhost:8000/docs`.
 
-## API Endpoints
+## API
 
 | Method | Endpoint                              | Description               |
 |--------|---------------------------------------|---------------------------|
@@ -103,53 +87,48 @@ Opens at `http://localhost:3000`. The backend must be running before you use the
 ## Project Structure
 
 ```
-ResearchAssistant/
-├── backend/
-│   ├── app/
-│   │   ├── main.py              # FastAPI application
-│   │   ├── config.py            # Settings (env vars)
-│   │   ├── models.py            # Pydantic schemas
-│   │   ├── db/
-│   │   │   └── vector_store.py  # ChromaDB setup
-│   │   ├── routes/
-│   │   │   ├── chat.py          # Q&A and summarize endpoints
-│   │   │   ├── conversations.py # Conversation management
-│   │   │   └── documents.py     # PDF upload & management
-│   │   └── services/
-│   │       ├── ingestion.py     # PDF loading & chunking
-│   │       ├── memory.py        # Conversation memory
-│   │       └── rag.py           # RAG pipeline
-│   ├── requirements.txt
-│   ├── .env.example
-│   └── run.py
-├── frontend/
-│   ├── public/index.html
-│   ├── src/
-│   │   ├── App.js               # Main app layout
-│   │   ├── App.css              # Styles
-│   │   ├── api.js               # API client
-│   │   ├── index.js
-│   │   └── components/
-│   │       ├── ChatPanel.js     # Chat interface
-│   │       ├── DocumentPanel.js # Document management
-│   │       └── Sidebar.js       # Navigation sidebar
-│   └── package.json
-├── .gitignore
-└── README.md
+backend/
+├── app/
+│   ├── main.py              # FastAPI app, CORS, router setup
+│   ├── config.py            # env-based settings
+│   ├── models.py            # Pydantic request/response schemas
+│   ├── db/
+│   │   └── vector_store.py  # ChromaDB client + embeddings
+│   ├── routes/
+│   │   ├── chat.py          # /ask and /summarize
+│   │   ├── conversations.py # CRUD for conversation history
+│   │   └── documents.py     # PDF upload, list, delete
+│   └── services/
+│       ├── ingestion.py     # PDF → chunks → vector store
+│       ├── memory.py        # JSON-backed conversation memory
+│       └── rag.py           # retrieval chain + LLM calls
+├── requirements.txt
+├── .env.example
+└── run.py
+
+frontend/
+├── src/
+│   ├── App.js / App.css
+│   ├── api.js               # axios wrapper for all endpoints
+│   └── components/
+│       ├── ChatPanel.js     # chat UI with markdown rendering
+│       ├── DocumentPanel.js # upload, list, summarize, delete
+│       └── Sidebar.js       # conversations list + nav
+└── package.json
 ```
 
-## Configuration
+## Config
 
-Edit `backend/.env`:
+`backend/.env`:
 
-| Variable         | Default                  | Description          |
-|------------------|--------------------------|----------------------|
-| `OPENAI_API_KEY` | *(required)*             | Your OpenAI API key  |
-| `LLM_MODEL`      | `gpt-4o-mini`            | Chat model to use    |
-| `EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model      |
+| Variable         | Default                  |
+|------------------|--------------------------|
+| `OPENAI_API_KEY` | *(required)*             |
+| `LLM_MODEL`      | `gpt-4o-mini`            |
+| `EMBEDDING_MODEL` | `text-embedding-3-small` |
 
-You can also tune chunking and retrieval parameters in `backend/app/config.py`.
+Chunking params (`CHUNK_SIZE`, `CHUNK_OVERLAP`, `TOP_K`) can be changed in `backend/app/config.py`.
 
-## Using a Local LLM
+## Local LLM
 
-To use a local model (e.g., via Ollama), swap `ChatOpenAI` for `ChatOllama` in `services/rag.py` and `OpenAIEmbeddings` for a local embedding model in `db/vector_store.py`. LangChain makes this a one-line change.
+To swap in a local model (e.g. Ollama), replace `ChatOpenAI` with `ChatOllama` in `services/rag.py` and use a local embedding model in `db/vector_store.py`.
